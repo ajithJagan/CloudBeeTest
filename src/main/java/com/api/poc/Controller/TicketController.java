@@ -17,11 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequestMapping("/tickets")
 public class TicketController {
 
-    private final Map<String, TrainTicket> tickets = new HashMap<>();
-    private final Map<String, User> users = new HashMap<>();
-    private final Map<String, Seat> seats = new HashMap<>();
 
-    private final AtomicLong ticketCounter = new AtomicLong(0);
     @Autowired
     TicketService ticketService;
 
