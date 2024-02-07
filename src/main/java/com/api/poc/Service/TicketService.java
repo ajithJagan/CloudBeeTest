@@ -3,7 +3,6 @@ package com.api.poc.Service;
 import com.api.poc.Model.Seat;
 import com.api.poc.Model.TrainTicket;
 import com.api.poc.Model.User;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
