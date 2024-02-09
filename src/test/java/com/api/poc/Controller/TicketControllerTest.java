@@ -54,7 +54,7 @@ class TicketControllerTest {
 
     @Test
     void getUsersBySection() {
-        String section = "first";
+        String section = "A";
         Map<String, User> users = new HashMap<>();
         when(ticketService.getSections(section)).thenReturn(users);
         ResponseEntity<Map<String, User>> responseEntity = ticketController.getUsersBySection(section);
@@ -64,14 +64,14 @@ class TicketControllerTest {
 
     @Test
     void removeUser() {
-        String ticketId = "123";
+        String ticketId = "1";
         ticketController.removeUser(ticketId);
         verify(ticketService, times(1)).deleteTicketId(ticketId);
     }
 
     @Test
     void modifySeat() {
-        String ticketId = "123";
+        String ticketId = "1";
         Seat newSeat = new Seat();
         ticketController.modifySeat(ticketId, newSeat);
         verify(ticketService, times(1)).editSeat(ticketId, newSeat);
