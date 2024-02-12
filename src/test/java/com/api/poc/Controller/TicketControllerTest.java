@@ -17,8 +17,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.*;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 class TicketControllerTest {
 
@@ -28,14 +26,42 @@ class TicketControllerTest {
     @InjectMocks
     TicketController ticketController;
 
+
+    TrainTicket trainTicket = new TrainTicket();
+    User user = new User();
+
+    Seat seat = new Seat();
+    Map<String, TrainTicket> tickets = new HashMap<>();
+    Map<String, Seat> seats = new HashMap<>();
+    Map<String, User> users = new HashMap<>();
+
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        user.setEmail("ajith.j@qbrainx.com");
+        user.setFirstName("Ajith");
+        user.setLastName("Abi");
+        user.setSeat(seat);
+
+        users.put("1", user);
+
+        seat.setSeatNumber(1);
+        seat.setSection("A");
+
+        seats.put("1",seat);
+
+        trainTicket.setTo("Chennai");
+        trainTicket.setFrom("Erode");
+        trainTicket.setPricePaid("20$");
+        trainTicket.setUser(user);
+
+        tickets.put("1",trainTicket);
     }
 
     @Test
     void purchaseTicket() {
-        TrainTicket trainTicket = new TrainTicket();
         when(ticketService.createTicket(trainTicket)).thenReturn("Ticket successfully purchased");
         ResponseEntity<String> responseEntity = ticketController.purchaseTicket(trainTicket);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -44,8 +70,7 @@ class TicketControllerTest {
 
     @Test
     void getTicket() {
-        String ticketId = "123";
-        TrainTicket trainTicket = new TrainTicket();
+        String ticketId = "1";
         when(ticketService.getTicket(ticketId)).thenReturn(trainTicket);
         ResponseEntity<TrainTicket> responseEntity = ticketController.getTicket(ticketId);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -55,7 +80,6 @@ class TicketControllerTest {
     @Test
     void getUsersBySection() {
         String section = "A";
-        Map<String, User> users = new HashMap<>();
         when(ticketService.getSections(section)).thenReturn(users);
         ResponseEntity<Map<String, User>> responseEntity = ticketController.getUsersBySection(section);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
