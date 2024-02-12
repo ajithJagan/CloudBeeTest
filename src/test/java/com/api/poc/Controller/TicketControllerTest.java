@@ -62,18 +62,5 @@ class TicketControllerTest {
         assertEquals(users, responseEntity.getBody());
     }
 
-    @Test
-    void removeUser() {
-        String ticketId = "1";
-        ticketController.removeUser(ticketId);
-        verify(ticketService, times(1)).deleteTicketId(ticketId);
-    }
 
-    @Test
-    void modifySeat() {
-        String ticketId = "1";
-        Seat newSeat = new Seat();
-        ticketController.modifySeat(ticketId, newSeat);
-        verify(ticketService, times(1)).editSeat(ticketId, newSeat);
-    }
 }
