@@ -1,0 +1,41 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app-container
+  template:
+    metadata:
+      labels:
+        app: demo-app-container
+    spec:
+      containers:
+        - name: demo-app-container
+          image: ajith2517/java:1.0
+          ports:
+            - containerPort: 8088
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-service
+status:
+  loadBalancer: {}
+spec:
+  ports:
+    - name: demo-app-service
+      protocol: TCP
+      port: 8088
+      targetPort: 8088
+  selector:
+    app: demo-app-container
+  type: ClusterIP
+  sessionAffinity: None
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  internalTrafficPolicy: Cluster

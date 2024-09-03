@@ -3,6 +3,7 @@ package com.api.poc.Service;
 import com.api.poc.Model.Seat;
 import com.api.poc.Model.TrainTicket;
 import com.api.poc.Model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
+@Slf4j
 public class TicketService {
 
 
@@ -30,6 +32,7 @@ public class TicketService {
     public TrainTicket getTicket(String ticketNo) {
         TrainTicket ticket = tickets.get(ticketNo);
         if (ticket == null) {
+            log.error("Ticket does not exist {}", ticketNo);
             return new TrainTicket();
         }
         return ticket;
@@ -46,9 +49,16 @@ public class TicketService {
     }
 
     public void deleteTicketId(String ticketId) {
-        tickets.remove(ticketId);
-        users.remove(ticketId);
-        seats.remove(ticketId);
+        if (tickets.containsKey(ticketId)) {
+            tickets.remove(ticketId);
+            users.remove(ticketId);
+            seats.remove(ticketId);
+            log.info("Deleted ticket id {}", ticketId);
+        }
+        else {
+            log.error("Ticket id {} not found", ticketId);
+        }
+
     }
 
 
@@ -59,8 +69,10 @@ public class TicketService {
             User updatedUser = ticks.getUser().setSeat(newSeat.getSection(), newSeat.getSeatNumber());
             ticks.setUser(updatedUser);
             tickets.put(ticketId, ticks);
+            log.info("Seat information updated successfully.");
             System.out.println("Seat information updated successfully.");
         } else {
+            log.info("Ticket ID does not exist.");
             System.out.println("Ticket ID does not exist.");
         }
     }
