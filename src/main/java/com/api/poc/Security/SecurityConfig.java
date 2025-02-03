@@ -2,36 +2,48 @@ package com.api.poc.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import com.api.poc.Repo.UserRepository;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, 
+                                                 JwtUtil jwtUtil, 
+                                                 UserRepository userRepository,
+                                                 UserDetailsService userDetailsService,
+                                                 AuthenticationManager authenticationManager) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers().permitAll() // Allow public access to this endpoint
-                        .anyRequest().authenticated() // All other endpoints require authentication
-                )
-                .httpBasic(); // Enable Basic Authentication
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/auth/register", "/auth/token").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(jwtFilter(jwtUtil, userRepository, userDetailsService, authenticationManager), 
+                               UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("admin")
-                .password("password")
-                .roles("USER")
-                .build();
+    public JwtFilter jwtFilter(JwtUtil jwtUtil, 
+                              UserRepository userRepository, 
+                              UserDetailsService userDetailsService, 
+                              AuthenticationManager authenticationManager) {
+        return new JwtFilter(jwtUtil, userRepository, userDetailsService, authenticationManager);
+    }
 
-        return new InMemoryUserDetailsManager(user);
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }
