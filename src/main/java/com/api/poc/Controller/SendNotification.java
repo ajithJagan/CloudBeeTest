@@ -7,13 +7,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/sendNotification")
+@RequiredArgsConstructor
 public class SendNotification {
 
     private final NotificationService notificationService;
 
-    public SendNotification(@Qualifier("SmsNotification") NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
+//    public SendNotification(@Qualifier("SmsNotification") NotificationService notificationService) {
+//        this.notificationService = notificationService;
+//    }
 
     @GetMapping("/sms")
     public void call(@RequestParam String msg) {
